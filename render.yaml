@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: nasa-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NASA_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PORT
+        value: 10000
+    rootDir: backend
+  - type: web
+    name: nasa-frontend
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false
+    rootDir: frontend
