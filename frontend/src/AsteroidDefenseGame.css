@@ -1,0 +1,69 @@
+.asteroid-game {
+  background: #111;
+  color: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1rem auto;
+  max-width: 500px;
+  box-shadow: 0 0 24px #0ff3, 0 2px 8px #000a;
+}
+.game-area {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(180deg, #222 60%, #333 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.asteroid {
+  position: absolute;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: top 0.5s linear;
+  outline: none;
+}
+.asteroid:focus {
+  box-shadow: 0 0 0 2px #0ff;
+}
+.scoreboard {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+.fact-popup {
+  background: #222d;
+  color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  position: fixed;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  box-shadow: 0 0 16px #0ff8;
+}
+.game-over {
+  font-size: 1.5rem;
+  color: #ff0;
+  margin-top: 1rem;
+}
+body.high-contrast, .asteroid-game.high-contrast {
+  background: #000 !important;
+  color: #fff !important;
+}
+.asteroid-game.high-contrast .game-area {
+  background: #000 !important;
+  border: 2px solid #fff !important;
+}
+.asteroid-game.high-contrast .asteroid {
+  color: #ff0 !important;
+  text-shadow: 0 0 8px #fff, 0 0 2px #ff0;
+}
+.asteroid-game.high-contrast .fact-popup {
+  background: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+.asteroid-game.high-contrast .game-over {
+  color: #0ff !important;
+}
