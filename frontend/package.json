@@ -6,13 +6,12 @@
     "@react-three/drei": "9.56.15",
     "@react-three/fiber": "8.0.27",
     "axios": "^1.6.0",
-    "i18next": "^25.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-i18next": "^15.5.3",
     "react-scripts": "5.0.1",
     "recharts": "^2.7.2",
-    "three": "0.150.1"
+    "three": "0.150.1",
+    "typescript": "^4.9.5"
   },
   "scripts": {
     "start": "react-scripts start",

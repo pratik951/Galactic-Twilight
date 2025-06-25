@@ -17,6 +17,8 @@ import AsteroidDefenseGame from './AsteroidDefenseGame';
 import './i18n';
 import { HighContrastProvider, useHighContrast } from './HighContrastContext';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function HighContrastToggle() {
   const { highContrast, setHighContrast } = useHighContrast();
   return (
@@ -105,7 +107,7 @@ function App() {
     const fetchApod = async () => {
       setLoading(true);
       try {
-        const res = await axios.get('http://localhost:5000/api/apod');
+        const res = await axios.get(`${API_URL}/api/apod`);
         setApod(res.data);
         setError(null);
       } catch (err) {
@@ -136,7 +138,7 @@ function App() {
       setError(null);
       setCaption('');
       try {
-        const res = await axios.post('http://localhost:5000/api/ai-caption', {
+        const res = await axios.post(`${API_URL}/api/ai-caption`, {
           title: apod.title,
           explanation: apod.explanation
         });

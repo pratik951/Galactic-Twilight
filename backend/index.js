@@ -85,8 +85,9 @@ app.post('/api/ai-caption', express.json(), async (req, res) => {
     const caption = openaiRes.data.choices[0].message.content;
     res.json({ caption });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to generate AI caption.' });
-  }
+  console.error('OpenAI error:', error.response?.data || error.message || error);
+  res.status(500).json({ error: 'Failed to generate AI caption.' });
+ }
 });
 
 // EPIC (Earth Polychromatic Imaging Camera) endpoint
