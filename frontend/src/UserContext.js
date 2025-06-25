@@ -30,7 +30,11 @@ export function UserProvider({ children }) {
     }
   };
   const logAction = (action) => {
-    setLogbook(lg => [...lg, { action, date: new Date().toISOString() }]);
+    setLogbook(lg => {
+      const updated = [...lg, { action, date: new Date().toISOString() }];
+      // Limit logbook to last 100 entries
+      return updated.slice(-100);
+    });
   };
 
   return (
