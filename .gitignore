@@ -1,26 +1,32 @@
-# Ignore environment files containing secrets
-backend/.env
-.env
-
-node_modules/
-**/node_modules/
-.cache/
-**/.cache/
-
-node_modules
-
-# Exclude large files and directories
-**/node_modules/
-**/build/
-**/.cache/
-**/dist/
-**/coverage/
+# === Global ignore rules ===
+.DS_Store
+Thumbs.db
 *.log
-*.tmp
-*.bak
+
+# === Environment / secret files ===
+.env
+*.env.*
+*.pem
+*.key
+*.crt
+*.pfx
+
+# === IDEs and Editors ===
+.vscode/
 *.swp
 *.swo
-*.DS_Store
-*.env
-*.env.*
 
+# === Node.js ===
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# === Frontend build artifacts ===
+frontend/build/
+frontend/.cache/
+
+# === Backend build artifacts ===
+backend/dist/
+backend/.cache/
+backend/tmp/
