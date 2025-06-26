@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useUser } from './UserContext';
 import './AsteroidDefenseGame.css';
-import { useHighContrast } from './HighContrastContext';
 
 // Simple arcade-style asteroid defense game using real NEO data
 const GAME_DURATION = 60; // seconds
+const MAX_ASTEROIDS = 10; // Maximum asteroids to hit for "congratulations"
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -12,13 +12,29 @@ function getRandomInt(min, max) {
 
 // Voice narration for asteroid facts and game events
 function getVoicesAsync() {
-  return new Promise(resolve => {
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length) return resolve(voices);
-    window.speechSynthesis.onvoiceschanged = () => {
-      const loadedVoices = window.speechSynthesis.getVoices();
-      resolve(loadedVoices);
-    };
+  return new Promise((resolve) => {
+    let voices = window.speechSynthesis.getVoices();
+    if (voices.length) {
+      console.log('Voices loaded:', voices);
+      return resolve(voices);
+    }
+
+    // Retry loading voices if not immediately available
+    const retryInterval = setInterval(() => {
+      voices = window.speechSynthesis.getVoices();
+      if (voices.length) {
+        console.log('Voices loaded after retry:', voices);
+        clearInterval(retryInterval);
+        resolve(voices);
+      }
+    }, 200);
+
+    // Timeout after 2 seconds if voices are still not available
+    setTimeout(() => {
+      clearInterval(retryInterval);
+      console.warn('Voices could not be loaded within the timeout period.');
+      resolve([]);
+    }, 2000);
   });
 }
 
@@ -27,41 +43,67 @@ async function speak(text, onFail, utterRef) {
     try {
       const voices = await getVoicesAsync();
       if (!voices.length) {
+        console.error('No voices available for speech synthesis.');
         if (onFail) onFail(true);
         return;
       }
-      // Prefer a female English voice if available
-      let voice = voices.find(v => v.lang && v.lang.startsWith('en') && v.gender === 'female');
+
+      // Prefer a female English voice
+      let voice = voices.find(v => v.lang && v.lang.startsWith('en') && v.name && /female|woman|girl/i.test(v.name));
       if (!voice) {
-        // Some browsers do not provide gender, so match by name
-        voice = voices.find(v => v.lang && v.lang.startsWith('en') && v.name && /female|woman|girl|zira|susan|samantha|linda|emma|victoria|karen|allison|julie|lucy|olivia|zoe|amy|joanna|ivy|kimberly|kendra|susan|tessa|vanessa|zoey/i.test(v.name));
-      }
-      if (!voice) {
-        // Fallback to any English voice
+        console.warn('No female English voice found. Using the first available English voice.');
         voice = voices.find(v => v.lang && v.lang.startsWith('en')) || voices[0];
       }
+
       const utter = new window.SpeechSynthesisUtterance(text);
-      if (voice) utter.voice = voice;
-      utter.rate = 1.5; // Set speech rate to 1.5x
-      utter.onerror = () => { if (onFail) onFail(true); };
-      utter.onstart = () => { if (onFail) onFail(false); };
+      utter.voice = voice;
+      utter.rate = 1.25; // Set speech rate to 1.25x for seamless narration
+      utter.pitch = 1; // Keep pitch neutral for a natural tone
+      utter.onerror = (e) => {
+        console.error('Speech synthesis error:', e);
+        if (onFail) onFail(true);
+      };
+      utter.onstart = () => {
+        console.log('Speech synthesis started.');
+        if (onFail) onFail(false);
+      };
+      utter.onend = () => {
+        console.log('Speech synthesis finished.');
+      };
       if (utterRef) utterRef.current = utter;
+
+      // Debugging: Log the selected voice
+      console.log('Using voice:', voice);
+
+      // Speak the text
+      window.speechSynthesis.cancel(); // Cancel any ongoing speech to avoid conflicts
       window.speechSynthesis.speak(utter);
+
+      // Debugging: Check if speechSynthesis is speaking
+      setTimeout(() => {
+        if (window.speechSynthesis.speaking) {
+          console.log('Speech synthesis is currently speaking.');
+        } else {
+          console.warn('Speech synthesis is not speaking.');
+        }
+      }, 100);
+
       if (window.__loggedVoices !== true) {
         console.log('Available voices:', voices);
         window.__loggedVoices = true;
       }
     } catch (e) {
+      console.error('Error during speech synthesis:', e);
       if (onFail) onFail(true);
     }
   } else {
+    console.error('Speech synthesis not supported in this browser.');
     if (onFail) onFail(true);
   }
 }
 
 const AsteroidDefenseGame = () => {
   const { awardBadge, logAction } = useUser();
-  const { highContrast } = useHighContrast();
   const [asteroids, setAsteroids] = useState([]);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -69,12 +111,13 @@ const AsteroidDefenseGame = () => {
   const [showFact, setShowFact] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [factQueue, setFactQueue] = useState([]); // queue for facts
-  const [currentFact, setCurrentFact] = useState(null); // currently displayed fact
+  const [factQueue, setFactQueue] = useState([]);
+  const [currentFact, setCurrentFact] = useState(null);
   const [speechError, setSpeechError] = useState(false);
-  const [speechReady, setSpeechReady] = useState(false); // tracks if user has enabled speech
+  const [speechReady, setSpeechReady] = useState(false);
+  const [congrats, setCongrats] = useState(false); // New state for "congratulations"
   const intervalRef = useRef();
-  const utterRef = useRef(); // add this near other refs
+  const utterRef = useRef();
 
   useEffect(() => {
     setLoading(true);
@@ -84,7 +127,7 @@ const AsteroidDefenseGame = () => {
       .then(res => res.json())
       .then(data => {
         const neos = Object.values(data.near_earth_objects || {}).flat();
-        setAsteroids(neos.slice(0, 10).map(neo => {
+        setAsteroids(neos.slice(0, MAX_ASTEROIDS).map(neo => {
           // Creative fact generation
           const diameter = neo.estimated_diameter?.meters?.estimated_diameter_max?.toFixed(1);
           const miss = neo.close_approach_data?.[0]?.miss_distance?.kilometers?.split('.')[0];
@@ -113,7 +156,7 @@ const AsteroidDefenseGame = () => {
   }, []);
 
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || congrats) return;
     intervalRef.current = setInterval(() => {
       setAsteroids(asts => asts.map(a => ({ ...a, y: a.y + a.speed })));
       setTimer(t => {
@@ -127,7 +170,7 @@ const AsteroidDefenseGame = () => {
       });
     }, 500);
     return () => clearInterval(intervalRef.current);
-  }, [gameOver, logAction]);
+  }, [gameOver, congrats, logAction]);
 
   useEffect(() => {
     if (factQueue.length > 0 && !currentFact) {
@@ -140,9 +183,18 @@ const AsteroidDefenseGame = () => {
   const handleTestSpeech = async () => {
     setSpeechError(false);
     setSpeechReady(true);
+    console.log('Testing speech synthesis...');
     await speak(
       'Speech synthesis is working! You will hear asteroid facts during the game.',
-      (err) => setSpeechError(!!err),
+      (err) => {
+        if (err) {
+          console.error('Speech synthesis test failed.');
+          setSpeechError(true);
+        } else {
+          console.log('Speech synthesis test succeeded.');
+          setSpeechError(false);
+        }
+      },
       utterRef
     );
   };
@@ -158,6 +210,14 @@ const AsteroidDefenseGame = () => {
       return () => clearTimeout(timer);
     }
   }, [currentFact, speechReady]);
+
+  useEffect(() => {
+    if (score >= MAX_ASTEROIDS) {
+      setCongrats(true);
+      setGameOver(true);
+      speak('Congratulations! You hit all the asteroids! 🚀', () => {}, utterRef);
+    }
+  }, [score]);
 
   // Only speak game over once
   const hasSpokenGameOver = useRef(false);
@@ -175,7 +235,7 @@ const AsteroidDefenseGame = () => {
   }, [gameOver, score, awardBadge, logAction, speechReady]);
 
   return (
-    <div className={`asteroid-game${highContrast ? ' high-contrast' : ''}`} aria-label="Asteroid Defense Game">
+    <div className="asteroid-game" aria-label="Asteroid Defense Game">
       <h2>Asteroid Defense Game</h2>
       {loading && <div style={{ textAlign: 'center', margin: '1rem' }}>Loading...</div>}
       {error && <div style={{ color: 'salmon', textAlign: 'center', margin: '1rem' }}>{error}</div>}
@@ -221,29 +281,34 @@ const AsteroidDefenseGame = () => {
               {currentFact}
             </div>
           )}
-          {gameOver && (
-            <div className="game-over" style={{textAlign:'center',marginTop:24}}>
+          {gameOver && !congrats && (
+            <div className="game-over" style={{ textAlign: 'center', marginTop: 24 }}>
               Game Over! Final Score: {score}
+            </div>
+          )}
+          {congrats && (
+            <div className="congrats-message" style={{ textAlign: 'center', marginTop: 24 }}>
+              🎉 Congratulations! You hit all the asteroids! 🚀
               <br />
               <button
-                style={{marginTop:16,padding:'10px 28px',background:'#ffd700',color:'#23243a',border:'none',borderRadius:8,fontWeight:700,fontSize:18,cursor:'pointer',boxShadow:'0 2px 8px #0008'}}
+                style={{ marginTop: 16, padding: '10px 28px', background: '#ffd700', color: '#23243a', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 18, cursor: 'pointer', boxShadow: '0 2px 8px #0008' }}
                 onClick={() => {
                   setGameOver(false);
+                  setCongrats(false);
                   setScore(0);
                   setTimer(GAME_DURATION);
-                  setAsteroids([]);
                   setFactQueue([]);
                   setCurrentFact(null);
                   setShowFact(null);
                   setError(null);
-                  setLoading(true);
-                  // Re-fetch asteroids
+
+                  // Reset asteroids and start the game immediately
                   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
                   fetch(`${backendUrl}/api/neo?start_date=2025-06-18&end_date=2025-06-18`)
                     .then(res => res.json())
                     .then(data => {
                       const neos = Object.values(data.near_earth_objects || {}).flat();
-                      setAsteroids(neos.slice(0, 10).map(neo => {
+                      setAsteroids(neos.slice(0, MAX_ASTEROIDS).map(neo => {
                         const diameter = neo.estimated_diameter?.meters?.estimated_diameter_max?.toFixed(1);
                         const miss = neo.close_approach_data?.[0]?.miss_distance?.kilometers?.split('.')[0];
                         const approach = neo.close_approach_data?.[0]?.close_approach_date_full || neo.close_approach_data?.[0]?.close_approach_date;
@@ -252,7 +317,8 @@ const AsteroidDefenseGame = () => {
                           `Did you know? ${neo.name} is about ${diameter ? diameter + ' meters' : 'unknown size'} wide!`,
                           `Watch out! ${neo.name} made a close approach on ${approach || 'an unknown date'}!`,
                           `Asteroid ${neo.name} is a true space traveler!`,
-                          `You just blasted ${neo.name}!`];
+                          `You just blasted ${neo.name}!`
+                        ];
                         const factIdx = Math.floor(Math.random() * funFacts.length);
                         return {
                           ...neo,
@@ -262,11 +328,10 @@ const AsteroidDefenseGame = () => {
                           creativeFact: funFacts[factIdx],
                         };
                       }));
-                      setLoading(false);
+                      setGameOver(false); // Ensure the game restarts
                     })
                     .catch(() => {
                       setError('Failed to load asteroid data.');
-                      setLoading(false);
                     });
                 }}
               >
@@ -275,7 +340,7 @@ const AsteroidDefenseGame = () => {
             </div>
           )}
           {speechError && (
-            <div style={{position:'absolute',top:50,left:'50%',transform:'translateX(-50%)',background:'#ffb347',color:'#23243a',padding:'10px 20px',borderRadius:8,boxShadow:'0 2px 8px #0008',zIndex:11}}>
+            <div style={{ position: 'absolute', top: 50, left: '50%', transform: 'translateX(-50%)', background: '#ffb347', color: '#23243a', padding: '10px 20px', borderRadius: 8, boxShadow: '0 2px 8px #0008', zIndex: 11 }}>
               Speech not supported or blocked. Please check your browser settings to enable audio narration.
             </div>
           )}
