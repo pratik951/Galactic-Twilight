@@ -11,6 +11,7 @@ function getRandomInt(min, max) {
 }
 
 // Voice narration for asteroid facts and game events
+<<<<<<< HEAD
 function getVoicesAsync() {
   return new Promise(resolve => {
     const voices = window.speechSynthesis.getVoices();
@@ -51,6 +52,16 @@ async function speak(text, onFail, utterRef) {
         console.log('Available voices:', voices);
         window.__loggedVoices = true;
       }
+=======
+function speak(text, onFail) {
+  if ('speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+      const utter = new window.SpeechSynthesisUtterance(text);
+      utter.onerror = () => { if (onFail) onFail(true); };
+      utter.onstart = () => { if (onFail) onFail(false); };
+      window.speechSynthesis.speak(utter);
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
     } catch (e) {
       if (onFail) onFail(true);
     }
@@ -72,9 +83,13 @@ const AsteroidDefenseGame = () => {
   const [factQueue, setFactQueue] = useState([]); // queue for facts
   const [currentFact, setCurrentFact] = useState(null); // currently displayed fact
   const [speechError, setSpeechError] = useState(false);
+<<<<<<< HEAD
   const [speechReady, setSpeechReady] = useState(false); // tracks if user has enabled speech
   const intervalRef = useRef();
   const utterRef = useRef(); // add this near other refs
+=======
+  const intervalRef = useRef();
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
 
   useEffect(() => {
     setLoading(true);
@@ -136,6 +151,7 @@ const AsteroidDefenseGame = () => {
     }
   }, [factQueue, currentFact]);
 
+<<<<<<< HEAD
   // Helper to test speech after user gesture
   const handleTestSpeech = async () => {
     setSpeechError(false);
@@ -165,14 +181,34 @@ const AsteroidDefenseGame = () => {
   useEffect(() => {
     if (gameOver && speechReady && !hasSpokenGameOver.current) {
       hasSpokenGameOver.current = true;
+=======
+  useEffect(() => {
+    if (currentFact) {
+      setSpeechError(false);
+      speak(currentFact, (err) => {
+        // Only set error if err is true (utterance failed or not supported)
+        setSpeechError(err === true);
+      });
+      const timer = setTimeout(() => setCurrentFact(null), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentFact]);
+
+  useEffect(() => {
+    if (gameOver) {
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
       speak('Game Over! Final Score: ' + score);
       if (score > 0) awardBadge('asteroid-hunter');
       logAction('Asteroid Defense Game completed!');
     }
+<<<<<<< HEAD
     if (!gameOver) {
       hasSpokenGameOver.current = false;
     }
   }, [gameOver, score, awardBadge, logAction, speechReady]);
+=======
+  }, [gameOver, score, awardBadge, logAction]);
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
 
   return (
     <div className={`asteroid-game${highContrast ? ' high-contrast' : ''}`} aria-label="Asteroid Defense Game">
@@ -181,6 +217,7 @@ const AsteroidDefenseGame = () => {
       {error && <div style={{ color: 'salmon', textAlign: 'center', margin: '1rem' }}>{error}</div>}
       {!loading && !error && (
         <>
+<<<<<<< HEAD
           <button
             style={{position:'absolute',top:10,right:10,zIndex:20,padding:'8px 18px',background:'#23243a',color:'#ffd700',border:'none',borderRadius:6,cursor:'pointer',boxShadow:'0 2px 8px #0008'}}
             onClick={handleTestSpeech}
@@ -188,6 +225,8 @@ const AsteroidDefenseGame = () => {
           >
             Test Speech
           </button>
+=======
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
           <div className="game-area" tabIndex={0} aria-label="Game Area">
             {asteroids.map((a) => (
               <div
@@ -221,6 +260,7 @@ const AsteroidDefenseGame = () => {
               {currentFact}
             </div>
           )}
+<<<<<<< HEAD
           {gameOver && (
             <div className="game-over" style={{textAlign:'center',marginTop:24}}>
               Game Over! Final Score: {score}
@@ -274,6 +314,9 @@ const AsteroidDefenseGame = () => {
               </button>
             </div>
           )}
+=======
+          {gameOver && <div className="game-over">Game Over! Final Score: {score}</div>}
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
           {speechError && (
             <div style={{position:'absolute',top:50,left:'50%',transform:'translateX(-50%)',background:'#ffb347',color:'#23243a',padding:'10px 20px',borderRadius:8,boxShadow:'0 2px 8px #0008',zIndex:11}}>
               Speech not supported or blocked. Please check your browser settings to enable audio narration.

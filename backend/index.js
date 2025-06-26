@@ -85,7 +85,10 @@ app.post('/api/ai-caption', express.json(), async (req, res) => {
     const caption = openaiRes.data.choices[0].message.content;
     res.json({ caption });
   } catch (error) {
+<<<<<<< HEAD
     console.error('OpenAI error:', error.response?.data || error.message || error);
+=======
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
     res.status(500).json({ error: 'Failed to generate AI caption.' });
   }
 });

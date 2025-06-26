@@ -4,12 +4,17 @@ const MarsRoverGallery = React.lazy(() => import('./MarsRoverGallery'));
 const EpicGallery = React.lazy(() => import('./EpicGallery'));
 const NeoChart = React.lazy(() => import('./NeoChart'));
 import AskNasaAI from './AskNasaAI';
+<<<<<<< HEAD
+=======
+import SpaceCapsule, { useSpaceCapsule } from './SpaceCapsule';
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
 import SpaceQuiz from './SpaceQuiz';
 import SpaceStory from './SpaceStory';
 import ApodTimeline from './ApodTimeline';
 import Starfield from './Starfield';
 import SolarSystemPage from './SolarSystemPage';
 import { UserProvider } from './UserContext';
+<<<<<<< HEAD
 import AsteroidDefenseGame from './AsteroidDefenseGame';
 import './i18n';
 import { HighContrastProvider } from './HighContrastContext';
@@ -31,6 +36,26 @@ const buttonBase = {
   outline: 'none',
   margin: 0
 };
+=======
+import ProfileModal from './ProfileModal';
+import ProfileButton from './ProfileButton';
+import AsteroidDefenseGame from './AsteroidDefenseGame';
+import './i18n';
+import { HighContrastProvider, useHighContrast } from './HighContrastContext';
+
+function HighContrastToggle() {
+  const { highContrast, setHighContrast } = useHighContrast();
+  return (
+    <button
+      aria-label={'Toggle high contrast mode'}
+      style={{ marginLeft: 16, borderRadius: 6, padding: '2px 8px', fontSize: 15 }}
+      onClick={() => setHighContrast(h => !h)}
+    >
+      {highContrast ? '🌑 High Contrast: ON' : '🌕 High Contrast: OFF'}
+    </button>
+  );
+}
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
 
 function Navbar({ page, setPage }) {
   return (
@@ -41,21 +66,32 @@ function Navbar({ page, setPage }) {
       <button onClick={() => setPage('neo')} style={{ ...buttonBase, fontWeight: page === 'neo' ? 'bold' : 'normal', background: page === 'neo' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'neo' ? '#23243a' : '#ffd700', fontSize: 15 }}>NEO</button>
       <button onClick={() => setPage('solar')} style={{ ...buttonBase, fontWeight: page === 'solar' ? 'bold' : 'normal', background: page === 'solar' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'solar' ? '#23243a' : '#ffd700', fontSize: 15 }}>Solar</button>
       <button onClick={() => setPage('asteroid')} style={{ ...buttonBase, fontWeight: page === 'asteroid' ? 'bold' : 'normal', background: page === 'asteroid' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'asteroid' ? '#23243a' : '#ffd700', fontSize: 15 }}>Asteroid Defense</button>
+<<<<<<< HEAD
+=======
+      <HighContrastToggle />
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
     </nav>
   );
 }
 
+<<<<<<< HEAD
 // Try these color/background combinations for mainBg to see which works best with your animated space background:
 
 // 1. Semi-transparent dark blue (good readability, default)
 const mainBg1 = {
   minHeight: '100vh',
   background: 'rgba(30,32,50,0.75)',
+=======
+const mainBg = {
+  minHeight: '100vh',
+  background: 'linear-gradient(120deg, #232526 0%, #414345 100%)',
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
   color: '#fff',
   fontFamily: 'Segoe UI, Arial, sans-serif',
   padding: 0,
   margin: 0,
   fontSize: 15,
+<<<<<<< HEAD
   boxSizing: 'border-box',
   width: '100vw',
   overflowX: 'hidden'
@@ -133,21 +169,73 @@ const mainBg6 = {
 
 // ---
 // To compare, render each in a separate section for visual comparison:
+=======
+};
+
+const buttonBase = {
+  background: 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)',
+  color: '#23243a',
+  border: 'none',
+  borderRadius: 8,
+  fontWeight: 700,
+  boxShadow: '0 2px 8px #0004',
+  cursor: 'pointer',
+  transition: 'transform 0.2s, box-shadow 0.2s',
+  outline: 'none',
+  fontSize: 15,
+  padding: '6px 16px',
+  minWidth: 0,
+  minHeight: 0,
+};
+
+function Card({ children, style }) {
+  return (
+    <div style={{
+      background: 'linear-gradient(120deg, #23243a 80%, #2d2d4a 100%)',
+      borderRadius: 14,
+      boxShadow: '0 2px 12px #0006',
+      padding: 18,
+      margin: '0 auto',
+      marginBottom: 18,
+      border: '1px solid #ffd70033',
+      transition: 'box-shadow 0.3s, transform 0.3s',
+      ...style
+    }}>
+      {children}
+    </div>
+  );
+}
+
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
 function App() {
   const [page, setPage] = useState('apod');
   const [apod, setApod] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+<<<<<<< HEAD
   const [quizOpen, setQuizOpen] = useState(false);
   const [storyOpen, setStoryOpen] = useState(false);
   const [timelineOpen, setTimelineOpen] = useState(false);
   const [askNasaOpen, setAskNasaOpen] = useState(false);
+=======
+  const [capsuleOpen, setCapsuleOpen] = useState(false);
+  const [quizOpen, setQuizOpen] = useState(false);
+  const [storyOpen, setStoryOpen] = useState(false);
+  const [timelineOpen, setTimelineOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const { addItem: addToCapsule } = useSpaceCapsule();
+  // Removed t and translation usage
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
 
   useEffect(() => {
     const fetchApod = async () => {
       setLoading(true);
       try {
+<<<<<<< HEAD
         const res = await axios.get(`${API_URL}/api/apod`);
+=======
+        const res = await axios.get('http://localhost:5000/api/apod');
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
         setApod(res.data);
         setError(null);
       } catch (err) {
@@ -168,7 +256,11 @@ function App() {
     );
   }
 
+<<<<<<< HEAD
   function AICaption({ apod }) {
+=======
+  function AICaption({ apod, addToCapsule }) {
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
     const [caption, setCaption] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -178,7 +270,11 @@ function App() {
       setError(null);
       setCaption('');
       try {
+<<<<<<< HEAD
         const res = await axios.post(`${API_URL}/api/ai-caption`, {
+=======
+        const res = await axios.post('http://localhost:5000/api/ai-caption', {
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
           title: apod.title,
           explanation: apod.explanation
         });
@@ -197,11 +293,16 @@ function App() {
         </button>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {caption && <div style={{ marginTop: 12, fontStyle: 'italic', background: 'rgba(34,34,60,0.95)', color: '#ffd700', padding: 16, borderRadius: 8, boxShadow: '0 2px 8px #0008', maxWidth: 500, wordBreak: 'break-word' }}>{caption}
+<<<<<<< HEAD
+=======
+          {addToCapsule && <button onClick={() => addToCapsule({ id: apod.date + '-ai', type: 'ai', caption })} style={{ marginLeft: 12, ...buttonBase, padding: '2px 10px' }}>Save to Capsule</button>}
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
         </div>}
       </div>
     );
   }
 
+<<<<<<< HEAD
   function FloatingButton({ label, children, ...props }) {
     const [hover, setHover] = useState(false);
     return (
@@ -424,10 +525,79 @@ function App() {
           flexDirection: 'column',
           gap: 18 // slightly more gap for circles
         }}>
+=======
+  return (
+    <HighContrastProvider>
+      <UserProvider>
+        <div style={mainBg}>
+          <Starfield />
+          <ProfileButton onClick={() => setProfileOpen(true)} />
+          <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
+          <div style={{ maxWidth: 900, margin: '0 auto', padding: 24, position: 'relative', zIndex: 1 }}>
+            <Navbar page={page} setPage={setPage} />
+            {page === 'apod' && (
+              <Card>
+                <h1 style={{ color: '#ffd700', marginBottom: 8 }}>NASA Astronomy Picture of the Day</h1>
+                {loading && <Spinner />}
+                {error && <p style={{ color: 'salmon' }}>{error}</p>}
+                {apod && (
+                  <div style={{ maxWidth: 600 }}>
+                    <h2 style={{ color: '#fff' }}>{apod.title}</h2>
+                    <img src={apod.url} alt={apod.title} style={{ width: '100%', borderRadius: 8, boxShadow: '0 2px 8px #0006' }} />
+                    <p style={{ color: '#e0e0e0' }}>{apod.explanation}</p>
+                    <p><b>Date:</b> {apod.date}</p>
+                    <AICaption apod={apod} addToCapsule={addToCapsule} />
+                  </div>
+                )}
+              </Card>
+            )}
+            {page === 'mars' && (
+              <Card style={{ background: '#1a1b2e' }}>
+                <Suspense fallback={<Spinner />}>
+                  <MarsRoverGallery />
+                </Suspense>
+              </Card>
+            )}
+            {page === 'epic' && (
+              <Card>
+                <Suspense fallback={<Spinner />}>
+                  <EpicGallery />
+                </Suspense>
+              </Card>
+            )}
+            {page === 'neo' && (
+              <Card>
+                <Suspense fallback={<Spinner />}>
+                  <NeoChart />
+                </Suspense>
+              </Card>
+            )}
+            {page === 'solar' && (
+              <Card style={{ background: '#0a0a1a' }}>
+                <SolarSystemPage />
+              </Card>
+            )}
+            {page === 'asteroid' && (
+              <Card><AsteroidDefenseGame /></Card>
+            )}
+          </div>
+          <AskNasaAI context={{ apod, page }} />
+          <button
+            aria-label="Open Space Capsule"
+            onClick={() => setCapsuleOpen(true)}
+            style={{
+              position: 'fixed', left: 32, bottom: 32, zIndex: 1000,
+              ...buttonBase, width: 60, height: 60, fontSize: 28, fontWeight: 700, boxShadow: '0 2px 12px #0006'
+            }}>
+            🚀
+          </button>
+          <SpaceCapsule open={capsuleOpen} onClose={() => setCapsuleOpen(false)} />
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
           <button
             aria-label="Open Space Quiz"
             onClick={() => setQuizOpen(true)}
             style={{
+<<<<<<< HEAD
               width: 56,
               height: 56,
               borderRadius: '50%',
@@ -446,10 +616,19 @@ function App() {
           >
             <span role="img" aria-label="Space Quiz">🧑‍🚀</span>
           </button>
+=======
+              position: 'fixed', left: 32, bottom: 110, zIndex: 1000,
+              ...buttonBase, width: 60, height: 60, fontSize: 28, fontWeight: 700, boxShadow: '0 2px 12px #0006'
+            }}>
+            🧑‍🚀
+          </button>
+          <SpaceQuiz open={quizOpen} onClose={() => setQuizOpen(false)} />
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
           <button
             aria-label="Open Space Story Mode"
             onClick={() => setStoryOpen(true)}
             style={{
+<<<<<<< HEAD
               width: 56,
               height: 56,
               borderRadius: '50%',
@@ -468,10 +647,19 @@ function App() {
           >
             <span role="img" aria-label="Space Story Mode">🌌</span>
           </button>
+=======
+              position: 'fixed', left: 32, bottom: 190, zIndex: 1000,
+              ...buttonBase, width: 60, height: 60, fontSize: 28, fontWeight: 700, boxShadow: '0 2px 12px #0006'
+            }}>
+            🌌
+          </button>
+          {apod && <SpaceStory apod={apod} open={storyOpen} onClose={() => setStoryOpen(false)} />}
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
           <button
             aria-label="Open APOD Timeline"
             onClick={() => setTimelineOpen(true)}
             style={{
+<<<<<<< HEAD
               width: 56,
               height: 56,
               borderRadius: '50%',
@@ -494,12 +682,22 @@ function App() {
         <SpaceQuiz open={quizOpen} onClose={() => setQuizOpen(false)} />
         {apod && <SpaceStory apod={apod} open={storyOpen} onClose={() => setStoryOpen(false)} />}
         <ApodTimeline open={timelineOpen} onClose={() => setTimelineOpen(false)} />
+=======
+              position: 'fixed', left: 32, bottom: 270, zIndex: 1000,
+              ...buttonBase, width: 60, height: 60, fontSize: 28, fontWeight: 700, boxShadow: '0 2px 12px #0006'
+            }}>
+            🕑
+          </button>
+          <ApodTimeline open={timelineOpen} onClose={() => setTimelineOpen(false)} />
+        </div>
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
       </UserProvider>
     </HighContrastProvider>
   );
 }
 
 export default App;
+<<<<<<< HEAD
 
 // Make sure Card is defined before App
 function Card({ children, style }) {
@@ -521,3 +719,5 @@ function Card({ children, style }) {
 }
 
 
+=======
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc

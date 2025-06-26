@@ -1,7 +1,18 @@
 {
+<<<<<<< HEAD
     "@react-three/fiber": "^8.0.27",
     "three": "^0.150.1",
     "devDependencies": {
         "@ljharb/tsconfig": "^0.3.2"
     }
+=======
+  "devDependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/preset-env": "^7.27.2"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^8.0.27",
+    "three": "^0.150.1"
+  }
+>>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
 }
