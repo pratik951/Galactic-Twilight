@@ -3,7 +3,9 @@ import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import NodeCache from 'node-cache';
+import { WebSocketServer } from 'ws';
 
+// Load environment variables from .env file
 dotenv.config();
 
 const app = express();
@@ -12,6 +14,19 @@ const NASA_API_KEY = process.env.NASA_API_KEY || 'DEMO_KEY';
 const cache = new NodeCache({ stdTTL: 300 }); // 5 minutes
 
 app.use(cors());
+
+// Function to dynamically fetch the OpenAI API key
+function getOpenAIKey() {
+  dotenv.config(); // Reload .env file to ensure the latest key is fetched
+  return process.env.OPENAI_API_KEY;
+}
+
+// Update the logging to hide the OpenAI API key
+console.log('Using OpenAI API Key: [HIDDEN]');
+
+// Clear the OpenAI API key from the cache
+cache.del('OPENAI_API_KEY');
+console.log('Cleared OpenAI API Key from cache.');
 
 // Cache middleware
 function cacheMiddleware(keyBuilder) {
@@ -29,13 +44,18 @@ function cacheMiddleware(keyBuilder) {
 }
 
 // Example endpoint: Astronomy Picture of the Day
+// Update the APOD endpoint to ensure it fetches and returns the data correctly
 app.get('/api/apod', cacheMiddleware(() => 'apod'), async (req, res) => {
   try {
     const response = await axios.get('https://api.nasa.gov/planetary/apod', {
       params: { api_key: NASA_API_KEY, ...req.query }
     });
+    if (!response.data) {
+      return res.status(404).json({ error: 'No APOD data found.' });
+    }
     res.json(response.data);
   } catch (error) {
+    console.error('Error fetching APOD data:', error.message || error);
     res.status(500).json({ error: 'Failed to fetch APOD data.' });
   }
 });
@@ -58,7 +78,7 @@ app.get('/api/mars-photos', cacheMiddleware(req => `mars-${JSON.stringify(req.qu
 // AI Caption Generator (OpenAI integration ready)
 app.post('/api/ai-caption', express.json(), async (req, res) => {
   const { title, explanation } = req.body;
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  const OPENAI_API_KEY = getOpenAIKey(); // Dynamically fetch the key
   if (!OPENAI_API_KEY) {
     // Fallback to mock if no key
     const mockCaption = `"${title}" — A cosmic wonder! Here’s a poetic take: ${explanation.slice(0, 80)}...`;
@@ -85,10 +105,7 @@ app.post('/api/ai-caption', express.json(), async (req, res) => {
     const caption = openaiRes.data.choices[0].message.content;
     res.json({ caption });
   } catch (error) {
-<<<<<<< HEAD
     console.error('OpenAI error:', error.response?.data || error.message || error);
-=======
->>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
     res.status(500).json({ error: 'Failed to generate AI caption.' });
   }
 });
@@ -126,7 +143,7 @@ app.get('/api/neo', cacheMiddleware(req => `neo-${JSON.stringify(req.query)}`), 
 // Ask NASA AI endpoint
 app.post('/api/ask-nasa', express.json(), async (req, res) => {
   const { question, context } = req.body;
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  const OPENAI_API_KEY = getOpenAIKey(); // Dynamically fetch the key
   if (!OPENAI_API_KEY) {
     // Mock response
     return res.json({ answer: `I'm a demo NASA AI. You asked: "${question}". Here's a fun fact: ${context?.apod?.title || 'The universe is vast and full of wonders!'}` });
@@ -172,8 +189,39 @@ app.get('/api/ssdcneos', cacheMiddleware(req => `ssdcneos-${JSON.stringify(req.q
   }
 });
 
-app.listen(PORT, () => {
+// Create a WebSocket server
+const wss = new WebSocketServer({ noServer: true });
+
+// Handle WebSocket connections
+wss.on('connection', (ws) => {
+  console.log('New WebSocket connection established.');
+
+  // Send periodic updates (example: Mars Rover photos)
+  const interval = setInterval(() => {
+    const update = {
+      type: 'mars-photos-update',
+      message: 'New Mars Rover photos available!',
+      timestamp: new Date().toISOString(),
+    };
+    ws.send(JSON.stringify(update));
+  }, 10000); // Send updates every 10 seconds
+
+  // Clean up on connection close
+  ws.on('close', () => {
+    clearInterval(interval);
+    console.log('WebSocket connection closed.');
+  });
+});
+
+// Integrate WebSocket server with Express
+app.server = app.listen(PORT, () => {
   console.log(`NASA backend server running on port ${PORT}`);
+});
+
+app.server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request);
+  });
 });
 
 export default app;

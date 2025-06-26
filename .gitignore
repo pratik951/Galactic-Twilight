@@ -1,0 +1,26 @@
+# Ignore environment files containing secrets
+backend/.env
+.env
+
+node_modules/
+**/node_modules/
+.cache/
+**/.cache/
+
+node_modules
+
+# Exclude large files and directories
+**/node_modules/
+**/build/
+**/.cache/
+**/dist/
+**/coverage/
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.DS_Store
+*.env
+*.env.*
+

@@ -30,15 +30,14 @@ export function UserProvider({ children }) {
     }
   };
   const logAction = (action) => {
-<<<<<<< HEAD
     setLogbook(lg => {
       const updated = [...lg, { action, date: new Date().toISOString() }];
-      // Limit logbook to last 100 entries
+      // Clear logbook after every 10 entries
+      if (updated.length > 10) {
+        return [];
+      }
       return updated.slice(-100);
     });
-=======
-    setLogbook(lg => [...lg, { action, date: new Date().toISOString() }]);
->>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
   };
 
   return (

@@ -1,5 +1,22 @@
-node_modules/
-.cache/
-build/
-.env
-.env
+# Exclude node_modules directory
+**/node_modules/
+
+# Exclude build directories
+**/build/
+**/.cache/
+**/dist/
+**/coverage/
+
+# Exclude log and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Exclude macOS system files
+*.DS_Store
+
+# Exclude environment variable files
+*.env
+*.env.*

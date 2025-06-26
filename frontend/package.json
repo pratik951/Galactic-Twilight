@@ -5,23 +5,17 @@
   "dependencies": {
     "@react-three/drei": "9.56.15",
     "@react-three/fiber": "8.0.27",
+    "ajv": "^8.17.1",
+    "ajv-keywords": "^5.1.0",
     "axios": "^1.6.0",
-<<<<<<< HEAD
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "recharts": "^2.7.2",
-    "three": "0.150.1",
-    "typescript": "^4.9.5"
-=======
     "i18next": "^25.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^15.5.3",
     "react-scripts": "5.0.1",
     "recharts": "^2.7.2",
-    "three": "0.150.1"
->>>>>>> 213db378c9fbf41e664e26138b161ec1992d3fbc
+    "three": "0.150.1",
+    "typescript": "^5.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -13,6 +13,9 @@ A web application to explore and visualize NASA's open data using React (fronten
 ## Features
 - Astronomy Picture of the Day (APOD) viewer
 - Mars Rover Photo Gallery with camera filter and chart visualization
+- Real-time updates using WebSocket for Mars Rover photos
+- Notifications dropdown in the Navbar for real-time updates
+- Efficient state management with lazy-loaded WebSocket connections
 - Responsive, modern UI
 - Error handling and loading states
 - Easy to extend with more NASA APIs
@@ -48,6 +51,7 @@ npm start
 - View the Astronomy Picture of the Day on load.
 - Explore Mars Rover photos by selecting rover, date, and camera.
 - Visualize photo counts per camera with a bar chart.
+- Receive real-time updates via the Notifications dropdown in the Navbar.
 
 ## Testing
 
@@ -68,6 +72,8 @@ npm start
 - Responsive design
 - Loading spinners for better UX
 - Basic automated tests for backend and frontend
+- Notifications auto-minimize after 7.5 seconds
+- Notifications list limited to the latest 10 entries
 
 ## License
 This project is for educational/demo purposes only.
