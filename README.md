@@ -75,5 +75,16 @@ npm start
 - Notifications auto-minimize after 7.5 seconds
 - Notifications list limited to the latest 10 entries
 
+## Important Note on API Keys
+
+When integrating the `OPENAI_API_KEY`, always run the following command to clear any previously cached API keys:
+
+```cmd
+cd backend 
+SET OPENAI_API_KEY=
+```
+
+This ensures that the application uses the correct API key during execution.
+
 ## License
 This project is for educational/demo purposes only.
