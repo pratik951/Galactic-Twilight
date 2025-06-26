@@ -6,6 +6,8 @@ Thumbs.db
 # === Environment / secret files ===
 .env
 *.env.*
+backend/.env
+frontend/.env
 *.pem
 *.key
 *.crt
