@@ -13,13 +13,11 @@ services:
       - key: PORT
         value: 10000
     rootDir: backend
-  - type: web
+  - type: staticSite
     name: nasa-frontend
-    env: static
     plan: free
-    buildCommand: npm install && npm run build
-    staticPublishPath: build
+    buildCommand: cd frontend && npm install && npm run build
+    publishDirectory: frontend/build
     envVars:
       - key: REACT_APP_API_URL
-        sync: false
-    rootDir: frontend
+        fromService: nasa-backend
