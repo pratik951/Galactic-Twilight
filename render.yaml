@@ -13,12 +13,12 @@ services:
       - key: PORT
         value: 10000
     rootDir: backend
+  - services:
   - type: staticSite
     name: nasa-frontend
-    plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
     publishDirectory: build
     envVars:
       - key: REACT_APP_API_URL
-        fromService: nasa-backend
+        value: https://galactic-twilight.onrender.com
