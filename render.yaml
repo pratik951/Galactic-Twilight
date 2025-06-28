@@ -13,7 +13,6 @@ services:
       - key: PORT
         value: 10000
     rootDir: backend
-  - services:
   - type: staticSite
     name: nasa-frontend
     rootDir: frontend
@@ -21,4 +20,4 @@ services:
     publishDirectory: build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://galactic-twilight.onrender.com
+        fromService: nasa-backend
