@@ -16,8 +16,9 @@ services:
   - type: staticSite
     name: nasa-frontend
     plan: free
-    buildCommand: cd frontend && npm install && npm run build
-    publishDirectory: frontend/build
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDirectory: build
     envVars:
       - key: REACT_APP_API_URL
         fromService: nasa-backend
