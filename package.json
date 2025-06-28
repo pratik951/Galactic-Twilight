@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "@react-three/fiber": "^8.0.27",
-    "three": "^0.150.1",
-    "ws": "^8.18.2"
+    "three": "0.150.1",
+    "@react-three/drei": "9.56.15",
+    "@react-three/fiber": "8.0.27"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
