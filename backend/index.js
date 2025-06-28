@@ -15,18 +15,14 @@ const cache = new NodeCache({ stdTTL: 300 }); // 5 minutes
 
 app.use(cors());
 
-// Function to dynamically fetch the OpenAI API key
-function getOpenAIKey() {
-  dotenv.config(); // Reload .env file to ensure the latest key is fetched
-  return process.env.OPENAI_API_KEY;
-}
+
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Update the logging to hide the OpenAI API key
 console.log('Using OpenAI API Key: [HIDDEN]');
 
-// Clear the OpenAI API key from the cache
-cache.del('OPENAI_API_KEY');
-console.log('Cleared OpenAI API Key from cache.');
+// Remove any code that attempts to clear or cache the OpenAI API key
+// (No cache logic for OPENAI_API_KEY should exist)
 
 // Cache middleware
 function cacheMiddleware(keyBuilder) {
@@ -83,7 +79,6 @@ app.get('/api/mars-photos', cacheMiddleware(req => `mars-${JSON.stringify(req.qu
 // AI Caption Generator (OpenAI integration ready)
 app.post('/api/ai-caption', express.json(), async (req, res) => {
   const { title, explanation } = req.body;
-  const OPENAI_API_KEY = getOpenAIKey(); // Dynamically fetch the key
   if (!OPENAI_API_KEY) {
     // Fallback to mock if no key
     const mockCaption = `"${title}" — A cosmic wonder! Here’s a poetic take: ${explanation.slice(0, 80)}...`;
@@ -148,7 +143,6 @@ app.get('/api/neo', cacheMiddleware(req => `neo-${JSON.stringify(req.query)}`), 
 // Ask NASA AI endpoint
 app.post('/api/ask-nasa', express.json(), async (req, res) => {
   const { question, context } = req.body;
-  const OPENAI_API_KEY = getOpenAIKey(); // Dynamically fetch the key
   if (!OPENAI_API_KEY) {
     // Mock response
     return res.json({ answer: `I'm a demo NASA AI. You asked: "${question}". Here's a fun fact: ${context?.apod?.title || 'The universe is vast and full of wonders!'}` });
