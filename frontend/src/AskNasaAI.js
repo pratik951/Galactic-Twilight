@@ -35,7 +35,7 @@ function AskNasaAI({ context, open = true, onClose }) {
     try {
       // Make sure this endpoint matches your backend route exactly!
       // For example, if your backend route is /api/ask_nasa_ai, use that.
-      const res = await axios.post(`${API_URL}/api/ask-nasa-ai`, { question, ...context });
+      const res = await axios.post(`${API_URL}/api/ask-nasa`, { question, ...context });
       setAnswer(res.data.answer);
     } catch (err) {
       let msg = 'Failed to get answer from NASA AI';
