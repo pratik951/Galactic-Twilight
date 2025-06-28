@@ -43,6 +43,11 @@ function cacheMiddleware(keyBuilder) {
   };
 }
 
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ status: 'NASA Backend API is running' });
+});
+
 // Example endpoint: Astronomy Picture of the Day
 // Update the APOD endpoint to ensure it fetches and returns the data correctly
 app.get('/api/apod', cacheMiddleware(() => 'apod'), async (req, res) => {

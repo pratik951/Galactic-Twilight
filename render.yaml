@@ -10,8 +10,6 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
-      - key: PORT
-        value: 10000
     rootDir: backend
   - type: staticSite
     name: nasa-frontend
