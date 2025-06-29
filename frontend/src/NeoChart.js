@@ -1,4 +1,16 @@
 import React, { useState } from 'react';
+// Simple SVG Loader
+function Loader({ size = 36 }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: size }}>
+      <svg width={size} height={size} viewBox="0 0 50 50">
+        <circle cx="25" cy="25" r="20" fill="none" stroke="#ffd700" strokeWidth="5" strokeDasharray="31.4 31.4" strokeLinecap="round">
+          <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite" />
+        </circle>
+      </svg>
+    </div>
+  );
+}
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
@@ -50,7 +62,7 @@ function NeoChart() {
       </div>
       {loading && (
         <div style={{ textAlign: 'center', margin: '1rem' }}>
-          <RocketLoader size={36} />
+          <Loader size={36} />
         </div>
       )}
       {error && <p style={{ color: 'salmon' }}>{error}</p>}
