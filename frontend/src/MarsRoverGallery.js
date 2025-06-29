@@ -16,7 +16,8 @@ function MarsRoverGallery() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get('http://localhost:5000/api/mars-photos', {
+      const apiUrl = process.env.REACT_APP_API_URL || '';
+      const res = await axios.get(`${apiUrl}/api/mars-photos`, {
         params: { rover, earth_date: date }
       });
       setPhotos(res.data.photos || []);

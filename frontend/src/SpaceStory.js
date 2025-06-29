@@ -13,7 +13,8 @@ export default function SpaceStory({ apod, open, onClose }) {
     setStory('');
     setAnimIdx(0);
     try {
-      const res = await axios.post('http://localhost:5000/api/ai-caption', {
+      const apiUrl = process.env.REACT_APP_API_URL || '';
+      const res = await axios.post(`${apiUrl}/api/ai-caption`, {
         title: apod.title,
         explanation: apod.explanation + '\nWrite a short, poetic story or poem about this image.'
       });

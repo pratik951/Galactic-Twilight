@@ -11,7 +11,8 @@ function EpicGallery() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get('http://localhost:5000/api/epic', {
+      const apiUrl = process.env.REACT_APP_API_URL || '';
+      const res = await axios.get(`${apiUrl}/api/epic`, {
         params: { date }
       });
       setImages(res.data || []);

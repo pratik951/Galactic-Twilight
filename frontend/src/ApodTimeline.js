@@ -22,7 +22,8 @@ export default function ApodTimeline({ open, onClose }) {
     setError(null);
     try {
       const dates = getPastDates(10);
-      const res = await axios.get('http://localhost:5000/api/apod', {
+      const apiUrl = process.env.REACT_APP_API_URL || '';
+      const res = await axios.get(`${apiUrl}/api/apod`, {
         params: { start_date: dates[dates.length - 1], end_date: dates[0] }
       });
       setApods(Array.isArray(res.data) ? res.data.reverse() : [res.data]);

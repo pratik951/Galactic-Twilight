@@ -233,7 +233,8 @@ function App() {
     const fetchApod = async () => {
       setLoading(true);
       try {
-        const res = await axios.get('http://localhost:5000/api/apod');
+        const apiUrl = process.env.REACT_APP_API_URL || '';
+        const res = await axios.get(`${apiUrl}/api/apod`);
         setApod(res.data);
         console.log('Fetched APOD data:', res.data);
         setError(null);
@@ -249,7 +250,11 @@ function App() {
   const initializeWebSocket = () => {
     if (wsRef.current) return; // Prevent multiple WebSocket connections
 
-    const ws = new WebSocket('ws://localhost:5000'); // Connect to the WebSocket server
+    // Use wss for secure WebSocket if API URL is https
+    const apiUrl = process.env.REACT_APP_API_URL || '';
+    const wsProtocol = apiUrl.startsWith('https') ? 'wss' : 'ws';
+    const wsHost = apiUrl.replace(/^https?:\/\//, '');
+    const ws = new WebSocket(`${wsProtocol}://${wsHost}`); // Connect to the WebSocket server
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -297,7 +302,8 @@ function App() {
       setCaption('');
 
       try {
-        const res = await axios.post('http://localhost:5000/api/ai-caption', {
+        const apiUrl = process.env.REACT_APP_API_URL || '';
+        const res = await axios.post(`${apiUrl}/api/ai-caption`, {
           title: apod.title,
           explanation: apod.explanation,
         });
