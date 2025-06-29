@@ -50,7 +50,7 @@ function Navbar({ page, setPage, updates, initializeWebSocket }) {
       <button onClick={() => setPage('mars')} style={{ ...buttonBase, fontWeight: page === 'mars' ? 'bold' : 'normal', background: page === 'mars' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'mars' ? '#23243a' : '#ffd700', fontSize: 16 }}>Mars</button>
       <button onClick={() => setPage('epic')} style={{ ...buttonBase, fontWeight: page === 'epic' ? 'bold' : 'normal', background: page === 'epic' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'epic' ? '#23243a' : '#ffd700', fontSize: 16 }}>EPIC</button>
       <button onClick={() => setPage('neo')} style={{ ...buttonBase, fontWeight: page === 'neo' ? 'bold' : 'normal', background: page === 'neo' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'neo' ? '#23243a' : '#ffd700', fontSize: 16 }}>NEO</button>
-      <button onClick={() => setPage('solar')} style={{ ...buttonBase, fontWeight: page === 'solar' ? 'bold' : 'normal', background: page === 'solar' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'solar' ? '#23243a' : '#ffd700', fontSize: 16 }}>Solar</button>
+      {/* Solar button removed */}
       <button onClick={() => setPage('asteroid')} style={{ ...buttonBase, fontWeight: page === 'asteroid' ? 'bold' : 'normal', background: page === 'asteroid' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'asteroid' ? '#23243a' : '#ffd700', fontSize: 16 }}>Asteroid Defense</button>
       <button onClick={handleNotificationsClick} style={{ ...buttonBase, background: '#23243a', color: '#ffd700', fontSize: 16 }}>Notifications</button>
       {showNotifications && (
@@ -516,11 +516,7 @@ function App() {
               </Suspense>
             </Card>
           )}
-          {page === 'solar' && (
-            <Card style={{ background: '#0a0a1a' }}>
-              <SolarSystemPage />
-            </Card>
-          )}
+          {/* Solar page removed */}
           {page === 'asteroid' && (
             <Card><AsteroidDefenseGame /></Card>
           )}

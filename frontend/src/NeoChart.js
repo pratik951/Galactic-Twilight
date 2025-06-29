@@ -48,7 +48,11 @@ function NeoChart() {
         <input id="neo-end" type="date" value={endDate} onChange={e => setEndDate(e.target.value)} aria-label="NEO end date" style={{ background: '#23243a', color: '#fff', border: '1px solid #888', borderRadius: 4, padding: '2px 8px' }} />
         <button onClick={fetchNeos} aria-label="Fetch NEOs" style={{ background: '#ffd700', color: '#23243a', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600 }}>Fetch NEOs</button>
       </div>
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div style={{ textAlign: 'center', margin: '1rem' }}>
+          <RocketLoader size={36} />
+        </div>
+      )}
       {error && <p style={{ color: 'salmon' }}>{error}</p>}
       {chartData.length > 0 && (
         <div style={{ maxWidth: 600, margin: '0 auto', background: '#23243a', borderRadius: 8, padding: 16 }}>

@@ -46,7 +46,11 @@ export default function ApodTimeline({ open, onClose }) {
       <div style={{ position: 'absolute', left: 0, right: 0, top: 60, margin: '0 auto', background: '#23243a', color: '#fff', borderRadius: 16, boxShadow: '0 2px 16px #000a', padding: 32, width: 700, maxWidth: '98vw', maxHeight: '80vh', overflowY: 'auto' }}>
         <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 8, right: 12, background: 'none', color: '#ffd700', border: 'none', fontSize: 22, cursor: 'pointer' }}>×</button>
         <h3 style={{ color: '#ffd700', marginTop: 0 }}>🕑 APOD Timeline</h3>
-        {loading && <div>Loading...</div>}
+        {loading && (
+          <div style={{ textAlign: 'center', margin: '1rem' }}>
+            <RocketLoader size={36} />
+          </div>
+        )}
         {error && <div style={{ color: 'salmon' }}>{error}</div>}
         <div style={{ display: 'flex', overflowX: 'auto', gap: 16, margin: '24px 0' }}>
           {apods.map((apod, idx) => (

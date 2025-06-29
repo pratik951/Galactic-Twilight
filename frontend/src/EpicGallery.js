@@ -37,7 +37,11 @@ function EpicGallery() {
         <input id="epic-date" type="date" value={date} onChange={e => setDate(e.target.value)} aria-label="EPIC date" style={{ background: '#23243a', color: '#fff', border: '1px solid #888', borderRadius: 4, padding: '2px 8px' }} />
         <button onClick={fetchImages} aria-label="Fetch EPIC images" style={{ background: '#ffd700', color: '#23243a', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600 }}>Fetch Images</button>
       </div>
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div style={{ textAlign: 'center', margin: '1rem' }}>
+          <RocketLoader size={36} />
+        </div>
+      )}
       {error && <p style={{ color: 'salmon' }}>{error}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center' }}>
         {images.map(img => (
