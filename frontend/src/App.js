@@ -416,13 +416,44 @@ function App() {
     setMissionNotifications((prev) => [notif, ...prev].slice(0, 10));
   };
 
+  // Responsive: add meta viewport, responsive styles, and flex direction changes for mobile
   return (
     <UserProvider>
       <div style={mainBg}>
+        <style>{`
+          @media (max-width: 700px) {
+            .apod-row {
+              flex-direction: column !important;
+              align-items: stretch !important;
+            }
+            .apod-img {
+              margin-right: 0 !important;
+              margin-bottom: 18px !important;
+              height: 220px !important;
+              min-width: 0 !important;
+              width: 100% !important;
+              max-width: 100% !important;
+            }
+            .apod-side {
+              width: 100% !important;
+              max-width: 100% !important;
+              align-items: flex-start !important;
+              padding-top: 0 !important;
+            }
+            .main-container {
+              padding: 0 2vw !important;
+            }
+            .card {
+              padding: 10px !important;
+            }
+          }
+        `}</style>
+        {/* Mobile viewport meta tag for mobile scaling */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Starfield />
         <ProfileButton onClick={() => setProfileOpen(true)} />
         <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 8px' }}>
+        <div className="main-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 8px' }}>
           <header style={{
             textAlign: 'center',
             padding: '20px 0',
@@ -436,26 +467,30 @@ function App() {
           </header>
           <Navbar page={page} setPage={setPage} />
           {page === 'apod' && (
-            <Card>
+            <Card style={{}} className="card">
               <h1 style={{ color: '#ffd700', marginBottom: 8 }}>NASA Astronomy Picture of the Day</h1>
               {loading && <Spinner />}
               {error && <p style={{ color: 'salmon' }}>{error}</p>}
               {apod && (
                 <div style={{ width: '100%' }}>
-                  <div style={{
-                    width: '100%',
-                    maxWidth: 900,
-                    margin: '0 auto',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    position: 'relative',
-                    padding: '8px 0',
-                    boxSizing: 'border-box',
-                  }}>
-                    <img 
-                      src={apod.url} 
-                      alt={apod.title} 
+                  <div
+                    className="apod-row"
+                    style={{
+                      width: '100%',
+                      maxWidth: 900,
+                      margin: '0 auto',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
+                      position: 'relative',
+                      padding: '8px 0',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    <img
+                      className="apod-img"
+                      src={apod.url}
+                      alt={apod.title}
                       style={{
                         flex: 1,
                         width: '100%',
@@ -470,7 +505,19 @@ function App() {
                         display: 'block',
                       }}
                     />
-                    <div style={{ minWidth: 0, width: 320, maxWidth: 400, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-start', paddingTop: 8 }}>
+                    <div
+                      className="apod-side"
+                      style={{
+                        minWidth: 0,
+                        width: 320,
+                        maxWidth: 400,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-end',
+                        justifyContent: 'flex-start',
+                        paddingTop: 8,
+                      }}
+                    >
                       <AICaption apod={apod} addToCapsule={addToCapsule} />
                       <h2 style={{ color: '#fff', margin: '24px 0 6px 0', fontSize: 22, fontWeight: 600, wordBreak: 'break-word', alignSelf: 'flex-start' }}>{apod.title}</h2>
                       <p style={{ margin: '10px 0 0 0', color: '#ffd700', fontWeight: 500, fontSize: 15, alignSelf: 'flex-start' }}><b>Date:</b> {apod.date}</p>
