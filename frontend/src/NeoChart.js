@@ -51,29 +51,117 @@ function NeoChart() {
   })();
 
   return (
-    <div style={{ marginTop: 40 }}>
-      <h2 style={{ color: '#ffd700', marginBottom: 16 }}>Near Earth Objects (NEO) Chart</h2>
-      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <label htmlFor="neo-start">Start Date: </label>
-        <input id="neo-start" type="date" value={startDate} onChange={e => setStartDate(e.target.value)} aria-label="NEO start date" style={{ background: '#23243a', color: '#fff', border: '1px solid #888', borderRadius: 4, padding: '2px 8px' }} />
-        <label htmlFor="neo-end">End Date: </label>
-        <input id="neo-end" type="date" value={endDate} onChange={e => setEndDate(e.target.value)} aria-label="NEO end date" style={{ background: '#23243a', color: '#fff', border: '1px solid #888', borderRadius: 4, padding: '2px 8px' }} />
-        <button onClick={fetchNeos} aria-label="Fetch NEOs" style={{ background: '#ffd700', color: '#23243a', border: 'none', borderRadius: 4, padding: '4px 12px', fontWeight: 600 }}>Fetch NEOs</button>
+    <div
+      style={{
+        marginTop: 40,
+        padding: '0 2vw',
+        boxSizing: 'border-box',
+        width: '100%',
+        maxWidth: 900,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        // Remove any border
+        border: 'none',
+        backgroundClip: 'padding-box',
+      }}
+    >
+      <h2
+        style={{
+          color: '#ffd700',
+          marginBottom: 16,
+          fontSize: 'clamp(1.2rem, 4vw, 2rem)',
+          textAlign: 'center',
+        }}
+      >
+        Near Earth Objects (NEO) Chart
+      </h2>
+      <div
+        style={{
+          marginBottom: 16,
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: 12,
+          justifyContent: 'center',
+        }}
+      >
+        <label htmlFor="neo-start" style={{ minWidth: 80 }}>Start Date: </label>
+        <input
+          id="neo-start"
+          type="date"
+          value={startDate}
+          onChange={e => setStartDate(e.target.value)}
+          aria-label="NEO start date"
+          style={{
+            background: '#23243a',
+            color: '#fff',
+            border: '1px solid #888',
+            borderRadius: 4,
+            padding: '2px 8px',
+            minWidth: 120,
+            fontSize: '1rem',
+          }}
+        />
+        <label htmlFor="neo-end" style={{ minWidth: 80 }}>End Date: </label>
+        <input
+          id="neo-end"
+          type="date"
+          value={endDate}
+          onChange={e => setEndDate(e.target.value)}
+          aria-label="NEO end date"
+          style={{
+            background: '#23243a',
+            color: '#fff',
+            border: '1px solid #888',
+            borderRadius: 4,
+            padding: '2px 8px',
+            minWidth: 120,
+            fontSize: '1rem',
+          }}
+        />
+        <button
+          onClick={fetchNeos}
+          aria-label="Fetch NEOs"
+          style={{
+            background: '#ffd700',
+            color: '#23243a',
+            border: 'none',
+            borderRadius: 4,
+            padding: '4px 12px',
+            fontWeight: 600,
+            fontSize: '1rem',
+            marginTop: 8,
+            minWidth: 120,
+          }}
+        >
+          Fetch NEOs
+        </button>
       </div>
       {loading && (
         <div style={{ textAlign: 'center', margin: '1rem' }}>
           <Loader size={36} />
         </div>
       )}
-      {error && <p style={{ color: 'salmon' }}>{error}</p>}
+      {error && <p style={{ color: 'salmon', textAlign: 'center' }}>{error}</p>}
       {chartData.length > 0 && (
-        <div style={{ maxWidth: 600, margin: '0 auto', background: '#23243a', borderRadius: 8, padding: 16 }}>
-          <h4 style={{ color: '#ffd700' }}>NEOs per Day</h4>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <div
+          style={{
+            width: '100%',
+            maxWidth: 600,
+            margin: '0 auto',
+            background: '#23243a',
+            borderRadius: 8,
+            padding: '2vw',
+            boxSizing: 'border-box',
+            minWidth: 0,
+          }}
+        >
+          <h4 style={{ color: '#ffd700', textAlign: 'center', fontSize: 'clamp(1rem, 2.5vw, 1.3rem)' }}>NEOs per Day</h4>
+          <ResponsiveContainer width="100%" height={window.innerWidth < 600 ? 180 : 250}>
+            <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis allowDecimals={false} />
+              <XAxis dataKey="date" fontSize={window.innerWidth < 600 ? 10 : 12} />
+              <YAxis allowDecimals={false} fontSize={window.innerWidth < 600 ? 10 : 12} />
               <Tooltip />
               <Bar dataKey="count" fill="#8884d8" />
             </BarChart>

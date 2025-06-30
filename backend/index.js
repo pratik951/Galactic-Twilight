@@ -188,6 +188,21 @@ app.get('/api/ssdcneos', cacheMiddleware(req => `ssdcneos-${JSON.stringify(req.q
   }
 });
 
+// Mars Rover Manifest endpoint: returns all available dates for a given rover
+app.get('/api/mars-manifest', cacheMiddleware(req => `manifest-${req.query.rover}`), async (req, res) => {
+  try {
+    const { rover = 'curiosity' } = req.query;
+    const url = `https://api.nasa.gov/mars-photos/api/v1/manifests/${rover}`;
+    const response = await axios.get(url, { params: { api_key: NASA_API_KEY } });
+    // Return just the list of dates and cameras for brevity
+    const manifest = response.data.photo_manifest;
+    const dates = manifest.photos.map(p => ({ earth_date: p.earth_date, cameras: p.cameras }));
+    res.json({ rover: manifest.name, landing_date: manifest.landing_date, max_date: manifest.max_date, total_photos: manifest.total_photos, dates });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch Mars Rover manifest.' });
+  }
+});
+
 // Create a WebSocket server
 const wss = new WebSocketServer({ noServer: true });
 

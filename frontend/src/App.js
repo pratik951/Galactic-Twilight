@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, useRef } from 'react';
+import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 const MarsRoverGallery = React.lazy(() => import('./MarsRoverGallery'));
 const EpicGallery = React.lazy(() => import('./EpicGallery'));
@@ -14,26 +14,9 @@ import AsteroidDefenseGame from './AsteroidDefenseGame';
 import './i18n';
 import ProfileButton from './ProfileButton';
 import ProfileModal from './ProfileModal';
+import NotificationBell from './NotificationBell';
 
-function Navbar({ page, setPage, updates, initializeWebSocket }) {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const notificationTimeoutRef = useRef(null);
-
-  const handleNotificationsClick = () => {
-    if (!showNotifications) {
-      initializeWebSocket(); // Initialize WebSocket only when opening notifications for the first time
-    }
-    setShowNotifications(true);
-
-    // Clear any existing timeout and set a new one to auto-minimize after 7-8 seconds
-    if (notificationTimeoutRef.current) {
-      clearTimeout(notificationTimeoutRef.current);
-    }
-    notificationTimeoutRef.current = setTimeout(() => {
-      setShowNotifications(false);
-    }, 7500); // 7.5 seconds
-  };
-
+function Navbar({ page, setPage }) {
   return (
     <nav style={{
       display: 'flex',
@@ -52,29 +35,6 @@ function Navbar({ page, setPage, updates, initializeWebSocket }) {
       <button onClick={() => setPage('neo')} style={{ ...buttonBase, fontWeight: page === 'neo' ? 'bold' : 'normal', background: page === 'neo' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'neo' ? '#23243a' : '#ffd700', fontSize: 16 }}>NEO</button>
       {/* Solar button removed */}
       <button onClick={() => setPage('asteroid')} style={{ ...buttonBase, fontWeight: page === 'asteroid' ? 'bold' : 'normal', background: page === 'asteroid' ? 'linear-gradient(90deg, #ffd700 60%, #ffb347 100%)' : '#23243a', color: page === 'asteroid' ? '#23243a' : '#ffd700', fontSize: 16 }}>Asteroid Defense</button>
-      <button onClick={handleNotificationsClick} style={{ ...buttonBase, background: '#23243a', color: '#ffd700', fontSize: 16 }}>Notifications</button>
-      {showNotifications && (
-        <div style={{
-          position: 'absolute',
-          top: '60px',
-          right: '20px',
-          background: 'rgba(30,32,50,0.95)',
-          borderRadius: '8px',
-          padding: '10px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
-          maxHeight: '300px',
-          overflowY: 'auto',
-        }}>
-          <h4 style={{ color: '#ffd700', margin: 0 }}>Updates</h4>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {updates.map((update, index) => (
-              <li key={index} style={{ color: '#fff', marginBottom: '5px' }}>
-                {update.message} - {new Date(update.timestamp).toLocaleString()}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </nav>
   );
 }
@@ -206,7 +166,7 @@ function Card({ children, style }) {
       padding: 20,
       margin: '0 auto',
       marginBottom: 20,
-      border: '1px solid rgba(255, 215, 0, 0.3)',
+      border: 'none', // Remove white border
       transition: 'box-shadow 0.3s, transform 0.3s',
       ...style
     }}>
@@ -226,8 +186,10 @@ function App() {
   const [timelineOpen, setTimelineOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [updates, setUpdates] = useState([]);
+  const [missionNotifications, setMissionNotifications] = useState([]);
   const { addItem: addToCapsule } = useSpaceCapsule();
   const wsRef = useRef(null);
+  const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
     const fetchApod = async () => {
@@ -247,34 +209,23 @@ function App() {
     fetchApod();
   }, []);
 
-  const initializeWebSocket = () => {
-    if (wsRef.current) return; // Prevent multiple WebSocket connections
-
-    // Use wss for secure WebSocket if API URL is https
+  const connectWebSocket = useCallback(() => {
+    if (wsRef.current) return;
     const apiUrl = process.env.REACT_APP_API_URL || '';
     const wsProtocol = apiUrl.startsWith('https') ? 'wss' : 'ws';
     const wsHost = apiUrl.replace(/^https?:\/\//, '');
-    const ws = new WebSocket(`${wsProtocol}://${wsHost}`); // Connect to the WebSocket server
+    const ws = new window.WebSocket(`${wsProtocol}://${wsHost}`);
     wsRef.current = ws;
-
-    ws.onopen = () => {
-      console.log('WebSocket connection established.');
-    };
-
+    ws.onopen = () => setWsConnected(true);
     ws.onmessage = (event) => {
       const update = JSON.parse(event.data);
-      console.log('Received update:', update);
-      setUpdates((prevUpdates) => {
-        const newUpdates = [...prevUpdates, update];
-        return newUpdates.length > 10 ? newUpdates.slice(-10) : newUpdates; // Keep only the last 10 updates
-      });
+      setMissionNotifications((prev) => [update, ...prev].slice(0, 10));
     };
-
     ws.onclose = () => {
-      console.log('WebSocket connection closed.');
-      wsRef.current = null; // Reset the WebSocket reference
+      setWsConnected(false);
+      wsRef.current = null;
     };
-  };
+  }, []);
 
   function Spinner() {
     return (
@@ -460,13 +411,18 @@ function App() {
     }
   };
 
+  // Pass a callback to MarsRoverGallery to add notifications
+  const handleMissionNotification = (notif) => {
+    setMissionNotifications((prev) => [notif, ...prev].slice(0, 10));
+  };
+
   return (
     <UserProvider>
       <div style={mainBg}>
         <Starfield />
         <ProfileButton onClick={() => setProfileOpen(true)} />
         <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: 24, position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 8px' }}>
           <header style={{
             textAlign: 'center',
             padding: '20px 0',
@@ -478,27 +434,64 @@ function App() {
           }}>
             Galactic Twilight ✨
           </header>
-          <Navbar page={page} setPage={setPage} updates={updates} initializeWebSocket={initializeWebSocket} />
+          <Navbar page={page} setPage={setPage} />
           {page === 'apod' && (
             <Card>
               <h1 style={{ color: '#ffd700', marginBottom: 8 }}>NASA Astronomy Picture of the Day</h1>
               {loading && <Spinner />}
               {error && <p style={{ color: 'salmon' }}>{error}</p>}
               {apod && (
-                <div style={{ maxWidth: 600 }}>
-                  <h2 style={{ color: '#fff' }}>{apod.title}</h2>
-                  <img src={apod.url} alt={apod.title} style={{ width: '100%', borderRadius: 8, boxShadow: '0 2px 8px #0006' }} />
-                  <p style={{ color: '#e0e0e0' }}>{apod.explanation}</p>
-                  <p><b>Date:</b> {apod.date}</p>
-                  <AICaption apod={apod} addToCapsule={addToCapsule} />
+                <div style={{ width: '100%' }}>
+                  <div style={{
+                    width: '100%',
+                    maxWidth: 900,
+                    margin: '0 auto',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'flex-start',
+                    position: 'relative',
+                    padding: '8px 0',
+                    boxSizing: 'border-box',
+                  }}>
+                    <img 
+                      src={apod.url} 
+                      alt={apod.title} 
+                      style={{
+                        flex: 1,
+                        width: '100%',
+                        maxWidth: 'none',
+                        minWidth: 320,
+                        height: 400,
+                        objectFit: 'cover',
+                        borderRadius: 14,
+                        boxShadow: '0 4px 18px #000a',
+                        marginRight: 32,
+                        transition: 'all 0.2s',
+                        display: 'block',
+                      }}
+                    />
+                    <div style={{ minWidth: 0, width: 320, maxWidth: 400, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-start', paddingTop: 8 }}>
+                      <AICaption apod={apod} addToCapsule={addToCapsule} />
+                      <h2 style={{ color: '#fff', margin: '24px 0 6px 0', fontSize: 22, fontWeight: 600, wordBreak: 'break-word', alignSelf: 'flex-start' }}>{apod.title}</h2>
+                      <p style={{ margin: '10px 0 0 0', color: '#ffd700', fontWeight: 500, fontSize: 15, alignSelf: 'flex-start' }}><b>Date:</b> {apod.date}</p>
+                    </div>
+                  </div>
+                  <div style={{
+                    width: '100%',
+                    maxWidth: 900,
+                    margin: '24px auto 0 auto',
+                    boxSizing: 'border-box',
+                  }}>
+                    <p style={{ color: '#e0e0e0', margin: 0, fontSize: 17, lineHeight: 1.7, wordBreak: 'break-word', textAlign: 'justify' }}>{apod.explanation}</p>
+                  </div>
                 </div>
               )}
             </Card>
           )}
           {page === 'mars' && (
-            <Card style={{ background: '#1a1b2e' }}>
+            <Card>
               <Suspense fallback={<Spinner />}>
-                <MarsRoverGallery />
+                <MarsRoverGallery onMissionNotify={handleMissionNotification} />
               </Suspense>
             </Card>
           )}
@@ -536,6 +529,7 @@ function App() {
             {featureLogos[feature.name]}
           </button>
         ))}
+        <NotificationBell notifications={missionNotifications} onBellClick={connectWebSocket} wsConnected={wsConnected} />
         <style>
           {`
             @keyframes glow {

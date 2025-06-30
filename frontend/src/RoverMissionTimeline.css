@@ -1,0 +1,73 @@
+.rover-timeline-container {
+  width: 100%;
+  margin: 1.5rem 0;
+  padding: 0.5rem 0;
+}
+.rover-timeline-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+.rover-timeline-date {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  position: relative;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.rover-timeline-date.selected {
+  background: #1976d2;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+}
+.rover-timeline-date.milestone {
+  background: #388e3c;
+  color: #fff;
+}
+.rover-timeline-date .milestone-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: gold;
+  border-radius: 50%;
+  margin-right: 0.4em;
+  vertical-align: middle;
+}
+.rover-timeline-date .date-label {
+  vertical-align: middle;
+}
+.rover-timeline-legend {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+.rover-timeline-legend .milestone-dot {
+  width: 12px;
+  height: 12px;
+  background: gold;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.3em;
+}
+.rover-timeline-legend .selected-box {
+  width: 16px;
+  height: 12px;
+  background: #1976d2;
+  display: inline-block;
+  border-radius: 3px;
+  margin-right: 0.3em;
+}
+@media (max-width: 600px) {
+  .rover-timeline-date {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.5rem;
+  }
+}
