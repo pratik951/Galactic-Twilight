@@ -122,11 +122,19 @@ const AsteroidDefenseGame = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
-    fetch(`${backendUrl}/api/neo?start_date=2025-06-18&end_date=2025-06-18`)
+    // Use REACT_APP_API_URL for backend, fallback to window.location.origin
+    const apiUrl = process.env.REACT_APP_API_URL || window.location.origin;
+    // Use today's date for NEO data
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const dateStr = `${yyyy}-${mm}-${dd}`;
+    fetch(`${apiUrl}/api/neo?start_date=${dateStr}&end_date=${dateStr}`)
       .then(res => res.json())
       .then(data => {
         const neos = Object.values(data.near_earth_objects || {}).flat();
+        if (!neos.length) throw new Error('No asteroid data available for today.');
         setAsteroids(neos.slice(0, MAX_ASTEROIDS).map(neo => {
           // Creative fact generation
           const diameter = neo.estimated_diameter?.meters?.estimated_diameter_max?.toFixed(1);
@@ -149,8 +157,8 @@ const AsteroidDefenseGame = () => {
         }));
         setLoading(false);
       })
-      .catch(() => {
-        setError('Failed to load asteroid data.');
+      .catch((err) => {
+        setError('Failed to load asteroid data. ' + (err.message || ''));
         setLoading(false);
       });
   }, []);
@@ -316,11 +324,17 @@ const AsteroidDefenseGame = () => {
                   setError(null);
 
                   // Reset asteroids and start the game immediately
-                  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
-                  fetch(`${backendUrl}/api/neo?start_date=2025-06-18&end_date=2025-06-18`)
+                  const apiUrl = process.env.REACT_APP_API_URL || window.location.origin;
+                  const today = new Date();
+                  const yyyy = today.getFullYear();
+                  const mm = String(today.getMonth() + 1).padStart(2, '0');
+                  const dd = String(today.getDate()).padStart(2, '0');
+                  const dateStr = `${yyyy}-${mm}-${dd}`;
+                  fetch(`${apiUrl}/api/neo?start_date=${dateStr}&end_date=${dateStr}`)
                     .then(res => res.json())
                     .then(data => {
                       const neos = Object.values(data.near_earth_objects || {}).flat();
+                      if (!neos.length) throw new Error('No asteroid data available for today.');
                       setAsteroids(neos.slice(0, MAX_ASTEROIDS).map(neo => {
                         const diameter = neo.estimated_diameter?.meters?.estimated_diameter_max?.toFixed(1);
                         const miss = neo.close_approach_data?.[0]?.miss_distance?.kilometers?.split('.')[0];
@@ -343,8 +357,8 @@ const AsteroidDefenseGame = () => {
                       }));
                       setGameOver(false); // Ensure the game restarts
                     })
-                    .catch(() => {
-                      setError('Failed to load asteroid data.');
+                    .catch((err) => {
+                      setError('Failed to load asteroid data. ' + (err.message || ''));
                     });
                 }}
               >
