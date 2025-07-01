@@ -77,9 +77,6 @@ The frontend will run on [http://localhost:3000](http://localhost:3000) and conn
 ### 5. Deploy
 
 - **Render.com:** Add both `backend` and `frontend` as separate web services. Set environment variables in the dashboard.
-- **Vercel/Netlify:** Deploy `frontend` as a static site, `backend` as a serverless function or Node service.
-- **Heroku:** Deploy both as separate apps or use a monorepo buildpack.
-
 ---
 
 ## 🧑‍💻 Technical Highlights
@@ -91,19 +88,6 @@ The frontend will run on [http://localhost:3000](http://localhost:3000) and conn
 - **WebSocket notifications:** Real-time mission updates.
 - **Mobile-first CSS:** Responsive, no-scroll, and touch-optimized.
 - **Accessibility:** Keyboard navigation, ARIA labels, and color contrast.
-
----
-
-## 🌟 Portfolio/Interview Enhancements (Ideas)
-
-- Add PWA support (installable, offline mode)
-- OAuth login (Google, GitHub)
-- More gamification (leaderboards, achievements)
-- Advanced accessibility (screen reader, high-contrast mode)
-- Internationalization (i18n)
-- Unit/integration tests (Jest, React Testing Library)
-- CI/CD pipeline (GitHub Actions)
-
 ---
 
 ## 📁 Project Structure
